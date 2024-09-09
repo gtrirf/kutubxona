@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <label for="return_due_date">Return Due Date:</label>
+        <input type="date" id="return_due_date" name="return_due_date" required>
+        <button type="submit" class="btn btn-primary">Confirm Rental</button>
+    </form>
+
+{% endblock %}
+
+{% if user.is_authenticated %}
+<!-- {% if book.quantity and not has_rented %} -->
+    <h2 class="mt-4">Rent this Book</h2>
+    <form method="post" action="{% url 'book_detail' %}">
+        {% csrf_token %}
+        <!-- <label for="return_due_date">Return Due Date:</label>
+        <input type="date" name="return_due_date" id="return_due_date" required> -->
+        <button type="submit" class="btn btn-success mt-2">Rent Book</button>
+        <small>coming soon</small>
+    </form>
+{% elif has_rented %}
+    <!-- <p class="mt-4">You have already requested to rent this book.</p> -->
+{% endif %}
+
+{% else %}
+<p class="mt-4">Please <a href="{% url 'login' %}">login</a> to add comments and rent books.</p>
+{% endif %}
+
+
+<!-- 
+<h2 class="mt-4">Queue</h2>
+<form method="post" action="{% url 'book_detail' %}">
+{% csrf_token %}
+<button type="submit" class="btn btn-warning">Join Queue</button>
+<small>coming soon</small>
+</form>
+</div>
+</div> -->

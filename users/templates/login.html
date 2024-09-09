@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+    <style>
+        /* Hide the footer on the login page */
+        .footer-custom {
+            display: none;
+        }
+
+        .code-input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .code-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        h1, p {
+            text-align: center;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.code-input');
+            const hiddenInput = document.getElementById('verification_code');
+            const form = document.getElementById('login-form');
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', () => {
+                    if (input.value.length === 1) {
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        } else {
+                            collectCodeAndSubmit();
+                        }
+                    }
+                });
+
+                input.addEventListener('keydown', (event) => {
+                    if (event.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('paste', (event) => {
+                    const pasteData = (event.clipboardData || window.clipboardData).getData('text');
+                    if (/^\d{6}$/.test(pasteData)) {
+                        event.preventDefault();
+                        pasteData.split('').forEach((char, idx) => {
+                            inputs[idx].value = char;
+                        });
+                        collectCodeAndSubmit();
+                    }
+                });
+            });
+
+            function collectCodeAndSubmit() {
+                let code = '';
+                inputs.forEach(input => {
+                    code += input.value;
+                });
+                hiddenInput.value = code;
+                form.submit();
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>Login</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <p>Tastiqlash kodini olish uchun <b><a href='https://t.me/akm_urgutbot'>@akm_urgutbot</a></b>ga kiring</p>
+    <form id="login-form" method="post">
+        {% csrf_token %}
+        <div class="code-input-container" style="margin-bottom: 200px;">
+            <input type="text" class="code-input" maxlength="1" pattern="\d" required>
+            <input type="text" class="code-input" maxlength="1" pattern="\d" required>
+            <input type="text" class="code-input" maxlength="1" pattern="\d" required>
+            <input type="text" class="code-input" maxlength="1" pattern="\d" required>
+            <input type="text" class="code-input" maxlength="1" pattern="\d" required>
+            <input type="text" class="code-input" maxlength="1" pattern="\d" required>
+        </div>
+        <input type="hidden" id="verification_code" name="verification_code">
+    </form>
+{% endblock %}

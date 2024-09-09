@@ -1,0 +1,121 @@
+
+.navbar-custom .navbar-brand {
+  color: #333; /* Brend rangini o'zgartirish */
+}
+
+.navbar-custom .navbar-nav .nav-link {
+  color: #333; /* Link rangini o'zgartirish */
+}
+
+.navbar-custom .navbar-nav .nav-link:hover {
+  color: #fa944b; /* Hover rang */
+}
+
+.navbar-custom .form-control {
+  background-color: #fff; /* Forma fon rangi */
+  border-color: #ccc; /* Border rangi */
+  color: #333; /* Forma matn rangi */
+}
+
+.navbar-custom .btn-primary {
+  background-color: #333; /* Tugma fon rangi */
+  border-color: #333; /* Tugma border rangi */
+}
+
+.navbar-custom .btn-primary:hover {
+  background-color: #555; /* Tugma hover fon rangi */
+  border-color: #555; /* Tugma hover border rangi */
+}
+/* Custom footer styles */
+footer {
+  background: #f2eddd; /* Footer fon rangi */
+  color: #333; /* Matn rangini o'zgartirish */
+  padding: 2rem 0;
+}
+
+footer a {
+  color: #333; /* Link rangini o'zgartirish */
+  font-size: 14px;
+  transition-duration: 0.2s;
+}
+
+footer a:hover {
+  color: #fa944b; /* Hover rang */
+  text-decoration: none;
+}
+
+.copy {
+  font-size: 12px;
+  padding: 10px;
+  border-top: 1px solid #333; /* Border rangini o'zgartirish */
+}
+
+.footer-middle {
+  padding-top: 2em;
+  color: #333; /* Matn rangini o'zgartirish */
+}
+
+/* Footer social icons */
+ul.social-network {
+  list-style: none;
+  display: inline;
+  margin-left: 0 !important;
+  padding: 0;
+}
+
+ul.social-network li {
+  display: inline;
+  margin: 0 5px;
+}
+
+.social-network a.icoFacebook:hover {
+  background-color: #3b5998;
+}
+
+.social-network a.icoYoutube:hover {
+  background-color: #FF0000;
+}
+
+.social-network a.icoInstagram:hover {
+  background-color: orange;
+}
+
+.social-network a.icoTelegram:hover {
+  background-color: #229ed9;
+}
+
+.social-network a.icoFacebook:hover i,
+.social-network a.icoYoutube:hover i,
+.social-network a.icoInstagram:hover i,
+.social-network a.icoTelegram:hover i {
+  color: white;
+}
+
+.social-circle li a {
+  display: inline-block;
+  position: relative;
+  margin: 0 auto;
+  border-radius: 50%;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  font-size: 15px;
+  background-color: #fff; /* O'zgartirilgan rang */
+}
+
+.social-circle li i {
+  margin: 0;
+  line-height: 30px;
+  text-align: center;
+}
+
+.social-circle li a:hover i,
+.triggeredHover {
+  transform: rotate(360deg);
+  transition: all 0.2s;
+}
+
+.social-circle i {
+  color: #595959;
+  transition: all 0.8s;
+}

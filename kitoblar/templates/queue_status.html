@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Queue Status
+{% endblock title %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>Your Queue Status</h2>
+        <p>Book: {{ book.title }}</p>
+        <p>Position in Queue: {{ position }}</p>
+        <p>Estimated Wait Time: {{ queue.estimated_wait_time }}</p>
+    </div>
+{% endblock content %}

@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-3">{{ book.title }}</h1>
+    
+    <div class="row">
+        <div class="col-md-4">
+            {% if book.image %}
+                <img src="{{ book.image.url }}" alt="{{ book.title }}" class="img-fluid rounded mb-3">
+            {% endif %}
+            <h4 class="text-muted">Author: {{ book.author }}</h4>
+        </div>
+        
+        <div class="col-md-8">
+            <p><strong>Description:</strong> {{ book.description|safe }}</p>
+            <p><strong>Quantity:</strong> {{ book.quantity }}</p>
+
+            {% if book.book_pdf %}
+                <a href="{% url 'book_download' book.pk %}" class="btn btn-primary mb-3">Download PDF</a>
+            {% endif %}
+            <small>
+                rent and queue coming soon
+            </small>
+        </div>
+    </div>
+
+
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="comments-section">
+                <h4>Comments</h4>
+                
+                <!-- Comments Form -->
+                <div class="comment-form">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="comment-form-buttons mt-3">
+                            <button type="button" class="btn btn-secondary" id="cancelComment">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="submitComment">Send</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- List of Comments -->
+                <div class="comments-list mt-4">
+                    {% for comment in comments %}
+                        <div class="comment mb-4">
+                            <div class="comment-header d-flex align-items-center">
+                                <img src="{{ comment.user.telegram_profile_photo }}" alt="{{ comment.user.telegram_username }}" class="comment-avatar rounded-circle">
+                                <div class="ml-3">
+                                    <h5 class="comment-author mb-1">{{ comment.user.telegram_username }}</h5>
+                                    <small class="text-muted">{{ comment.created_at }}</small>
+                                </div>
+                            </div>
+                            <p class="comment-content mt-2">{{ comment.comment|safe }}</p>
+                            {% if comment.user == user %}
+                                <form method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                                    <button type="submit" name="delete_comment" class="btn btn-danger btn-sm">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <p>No comments yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clearfix -->
+    <div class="clearfix"></div>
+</div>
+
+<style>
+    /* Scoped CSS */
+    .comments-section {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+
+    .comment-form {
+        margin-bottom: 2rem;
+        border-top: 1px solid #ddd;
+        padding-top: 1rem;
+    }
+
+    .comment-form-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .comment {
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 1rem;
+    }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+    }
+
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .comment-author {
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    .comment-content {
+        margin: 0;
+    }
+
+    .comment-form textarea {
+        width: 100%;
+        height: 100px;
+        resize: none;
+        border-radius: 5px;
+        padding: 0.5rem;
+    }
+
+    .comment-form button {
+        float: right;
+    }
+</style>
+
+{% endblock %}

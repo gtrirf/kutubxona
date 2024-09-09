@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Asosiy sahifa
+{% endblock title %}
+
+{% block content %}
+
+    <!-- Carousel -->
+    <div id="imageCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
+        <div class="carousel-inner">
+            {% for img in images %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ img.image.url }}" class="d-block w-100" alt="rasm">
+                </div>
+            {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+        <div class="carousel-caption d-none d-md-block">
+            <div class="caption-text">
+                Urgut tuman axborot kutubxona makrazi
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!-- Main Content -->
+    <h1 class="mt-5 mb-5" id="blogs">Blogs</h1>
+    <hr>
+
+    <div class="row">
+        <!-- Main Blog Card -->
+        <div class="col-md-8">
+            {% if blogs %}
+                {% with blog=blogs.0 %}
+                    <div class="card mb-4 blog-card">
+                        <a href="{% url 'home:blog-detail' blog.pk %}" class="stretched-link text-decoration-none text-dark">
+                            {% if blog.image.url %}
+                                <img class="card-img-top" src="{{ blog.image.url }}" alt="Card image cap">
+                            {% endif %}
+                            <div class="card-body">
+                                <h2 class="card-title text-dark">{{ blog.title }}</h2>
+                                <p class="card-text text-dark">{{ blog.body|safe|truncatewords:30 }}</p>
+                                <a href="{% url 'home:blog-detail' blog.pk %}" class="btn btn-primary">Read More</a>
+                            </div>
+                        </a>
+                    </div>
+                {% endwith %}
+            {% endif %}
+        </div>
+
+        <!-- Recommended Blogs -->
+        <div class="col-md-4">
+            <h4 class="font-weight-bold">Tavsiya etiladi</h4>
+            <ul class="list-unstyled" id="recommendedBlogs">
+                {% for blog in page_obj.object_list %}
+                    <li class="media mb-4 recommended-blog">
+                        <a href="{% url 'home:blog-detail' blog.pk %}" class="d-flex align-items-center text-decoration-none text-dark">
+                            {% if blog.image %}
+                                <img src="{{ blog.image.url }}" class="mr-3" alt="{{ blog.title }}" style="width: 100px; height: 100px; object-fit: cover;">
+                            {% endif %}
+                            <div class="media-body">
+                                <h5 class="mt-0 mb-1">{{ blog.title }}</h5>
+                                <p>{{ blog.body|safe|truncatewords:3 }}</p>
+                            </div>
+                        </a>
+                    </li>
+                <hr>
+
+                {% endfor %}
+                
+            </ul>
+            {% if page_obj.has_next %}
+                <div class="text-center" style="align-items: center;">
+                    <button id="loadMore" style="padding-left:30px;padding-right: 30px;" class="btn btn-success" data-next-page="{{ page_obj.next_page_number }}"> Yana </button>
+                    <button id="cancelLoad" class="btn btn-danger" style="display: none;">qaytarish </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Inline CSS -->
+    <style>
+        /* Carousel Styles */
+        .carousel-item img {
+            width: 100%;
+            height: 600px;
+            object-fit: cover;
+        }
+        .carousel-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+        }
+        .caption-text {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Blog Card Styles */
+        .card-img-top {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        .blog-card {
+            border: none; /* Remove shadow */
+            transition: transform 0.3s ease-in-out;
+        }
+        .blog-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Recommended Blogs Styles */
+        .recommended-blog {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .recommended-blog:hover {
+            transform: translateY(-5px);
+            box-shadow: 2px 5px 5px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .carousel-item img {
+                height: 400px;
+            }
+            .caption-text {
+                font-size: 18px;
+            }
+        }
+        @media (max-width: 576px) {
+            .carousel-item img {
+                height: 200px;
+            }
+            .caption-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadMoreButton = document.getElementById('loadMore');
+            const cancelLoadButton = document.getElementById('cancelLoad');
+            let addedBlogs = [];  // Array to keep track of added blog elements
+
+            if (loadMoreButton) {
+                loadMoreButton.addEventListener('click', function() {
+                    const nextPage = this.getAttribute('data-next-page');
+                    fetch(`?page=${nextPage}`)
+                        .then(response => response.text())
+                        .then(data => {
+                            const parser = new DOMParser();
+                            const newDocument = parser.parseFromString(data, 'text/html');
+                            const newBlogs = newDocument.querySelectorAll('#recommendedBlogs .recommended-blog');
+                            const recommendedBlogs = document.getElementById('recommendedBlogs');
+
+                            newBlogs.forEach(blog => {
+                                recommendedBlogs.appendChild(blog);
+                                const hr = document.createElement('hr');
+                                recommendedBlogs.appendChild(hr);
+                                addedBlogs.push(blog, hr);  // Keep track of added elements
+                            });
+
+                            // Show the "Bekor qilish" button
+                            cancelLoadButton.style.display = 'inline-block';
+
+                            // Update the "Load More" button or hide it if no more pages
+                            const newLoadMoreButton = newDocument.getElementById('loadMore');
+                            if (newLoadMoreButton) {
+                                loadMoreButton.setAttribute('data-next-page', newLoadMoreButton.getAttribute('data-next-page'));
+                            } else {
+                                loadMoreButton.style.display = 'none';
+                            }
+                        })
+                        .catch(error => console.error('Error loading more blogs:', error));
+                });
+            }
+
+            if (cancelLoadButton) {
+                cancelLoadButton.addEventListener('click', function() {
+                    // Remove all added blogs
+                    addedBlogs.forEach(element => element.remove());
+                    addedBlogs = [];  // Clear the list of added elements
+
+                    // Hide the "Bekor qilish" button
+                    cancelLoadButton.style.display = 'none';
+
+                    // Re-show the "Load More" button if it was hidden
+                    if (!loadMoreButton.style.display || loadMoreButton.style.display === 'none') {
+                        loadMoreButton.style.display = 'inline-block';
+                    }
+                });
+            }
+        });
+    </script>
+
+{% endblock content %}
+    

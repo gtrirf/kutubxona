@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Rental Confirmation
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Rental Confirmation</h2>
+    <p>Thank you for renting <strong>{{ rental.book.title }}</strong>.</p>
+    <p>Your return due date is <strong>{{ rental.return_due_date }}</strong>.</p>
+    <p>You can pick up your book from the library.</p>
+</div>
+{% endblock %}

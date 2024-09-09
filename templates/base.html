@@ -1,0 +1,212 @@
+{% load crispy_forms_tags %}
+{% load static %}
+{% block extrahead %}
+<script>window.CKEDITOR_BASEPATH = '/static/ckeditor/ckeditor/';</script>
+{{ block.super }}
+{% endblock %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet" >
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/brands.min.css" rel="stylesheet" >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <style>
+        html {
+        scroll-behavior: smooth;
+            }
+        body {
+            padding-top: 70px; /* Navbar balandligiga mos ravishda o'zgartiring */
+        }
+        .navbar-custom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background-color: #f2eddde1;
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .navbar-toggler {
+            background-color: #333; /* Set button background color */
+            border: none; /* Remove default border */
+        }
+
+        /* Styles for the navbar-toggler icon */
+        .navbar-toggler-icon {
+            background-color: #fff; /* Default white background for icon */
+            mask: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='%23fff' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") center / contain no-repeat; /* Use the SVG path with white color */
+            background-color: #fff; /* Ensure background color is white */
+        }
+        @media (max-width: 576px) {
+        .navbar-nav .dropdown-menu .dropdown-item {
+            padding: 5px 10px; /* Adjust padding as needed */
+            font-size: 14px; /* Reduce font size for better fit */
+        }
+
+        .navbar-nav .dropdown-menu {
+            width: auto; /* Ensure dropdown adjusts to content width */
+        }
+    }
+    </style>    
+</head>
+<body class="d-flex flex-column min-vh-100" style="background-color:#eaeef493;">
+
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top p-3">
+  <a class="navbar-brand" href="{% url 'home:home' %}"><b style="margin-left: 30px;">URGUT-AKM</b></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon" ></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mx-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'home:home' %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/#blogs">Blogs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'book_list' %}">Books</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">About</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0" method="get" action="{% url 'home:search-results' %}">
+        <input class="form-control mr-sm-2" type="search" name="q" placeholder="Search" aria-label="Search" value="{{ query }}">
+        <button class="btn btn-primary my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
+    </form>
+      
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+      {% if not request.user.is_authenticated %}
+        <button class="btn btn-primary px-4"><a href="{% url 'login' %}" style="color: white; text-decoration:none;"><i class="fa fa-bolt"  style="color:gold;" aria-hidden="true"></i> Kirish</a></button>
+      {% endif %}
+      </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Husisyatlar
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                {% if request.user.is_authenticated %}
+                    {% if user.telegram_username %}
+                        <p class="dropdown-item" style="font-family: 'Nanum Gothic', sans-serif; font-weight: 400; font-style: normal;">
+                            <small style="font-weight: bolder;margin-left: 40px;">@{{ user.telegram_username }}</small>
+                            <br>
+                            {% if user.telegram_profile_photo %}
+                                <img src="{{ user.telegram_profile_photo }}" alt="users photo" style="width: 30px; border-radius: 50%; margin-right: 5px; vertical-align: middle; ">
+                            {% endif %}
+                            {% if user.phone_number %}
+                                <small style="font-weight:400; font-size: x-small;">{{ user.phone_number }}</small>
+                            {% endif %}
+
+                        </p>
+                    <hr>
+                    {% else %}
+                        <p class="dropdown-item"> </p>
+                        <hr>
+                    {% endif %}
+                {% endif %}
+
+                <a class="dropdown-item" href="#"><i class="fa fa-language"></i> Til</a>
+                <a class="dropdown-item" href="#"><i class="fa fa-moon" style="--fa-secondary-opacity: 1;"></i> Mavzu sozlamalari</a>
+                <a class="dropdown-item" href="{% url 'feedback' %}"><i class="fa fa-comments"></i> mulohaza yuborish</a>
+
+                {% if request.user.is_authenticated %}
+                    <hr>
+                    <a class="dropdown-item" href="{% url 'logout' %}" style="color:#8b0000;"><i class="fa fa-sign-out" aria-hidden="true"></i> chiqish </a>
+                {% endif %}
+            </div>
+        </li>
+    </ul>
+  </div>
+</nav>
+
+    
+
+    <div class="container mt-5 flex-fill" style="margin-bottom:100px ;">
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <footer class="mainfooter mt-auto" role="contentinfo">
+        <div class="footer-middle">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6">
+                        <!--Column1-->
+                        <div class="footer-pad">
+                            <h4>Heading 1</h4>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Payment Center</a></li>
+                                <li><a href="#">Contact Directory</a></li>
+                                <li><a href="#">Forms</a></li>
+                                <li><a href="#">News and Updates</a></li>
+                                <li><a href="#">FAQs</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <!--Column2-->
+                        <div class="footer-pad">
+                            <h4>Heading 2</h4>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Website Tutorial</a></li>
+                                <li><a href="#">Accessibility</a></li>
+                                <li><a href="#">Disclaimer</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Webmaster</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <!--Column3-->
+                        <div class="footer-pad">
+                            <h4>Heading 3</h4>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Parks and Recreation</a></li>
+                                <li><a href="#">Public Works</a></li>
+                                <li><a href="#">Police Department</a></li>
+                                <li><a href="#">Fire</a></li>
+                                <li><a href="#">Mayor and City Council</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h4>Follow Us</h4>
+                        <ul class="social-network social-circle">
+                            <li><a href="https://facebook.com" class="icoFacebook" title="Facebook"><i class="fa-brands fa-facebook"></i></a></li>
+                            <li><a href="https://youtube.com" class="icoYoutube" title="Youtube"><i class="fa-brands fa-youtube"></i></a></li>
+                            <li><a href="https://instagram.com" class="icoInstagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a></li>
+                            <li><a href="https://t.me" class="icoTelegram" title="Telegram"><i class="fa-brands fa-telegram"></i></a></li>
+                        </ul>
+                        <br>
+                        <br>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 copy">
+                        <p class="text-center">&copy; Copyright 2024 - Unicon. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+</body>
+</html>

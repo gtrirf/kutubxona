@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Book List{% endblock %}
+
+{% block content %}
+<h1>Book List</h1>
+
+<div class="row">
+    <!-- Filters Sidebar -->
+    <div class="col-md-3 sidebar">
+        <h4>Filters</h4>
+        <form method="GET">
+            <!-- Author Filter -->
+            <div class="mb-3">
+                <label for="author">Author</label>
+                <select name="author" id="author" class="form-control">
+                    <option value="">All</option>
+                    {% for author in authors %}
+                        <option value="{{ author.id }}" {% if author.id|stringformat:"s" == selected_author %}selected{% endif %}>{{ author.nickname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Category Filter -->
+            <div class="mb-3">
+                <label for="category">Category</label>
+                <select name="category" id="category" class="form-control">
+                    <option value="">All</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if category.id|stringformat:"s" == selected_category %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Language Filter -->
+            <div class="mb-3">
+                <label>Language</label>
+                {% for language in languages %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="language" id="language{{ language.id }}" value="{{ language.id }}" {% if language.id|stringformat:"s" in selected_languages %}checked{% endif %}>
+                    <label class="form-check-label" for="language{{ language.id }}">{{ language.til }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- Writing Filter -->
+            <div class="mb-3">
+                <label for="writing">Writing</label>
+                <select name="writing" id="writing" class="form-control">
+                    <option value="">All</option>
+                    {% for writing in writings %}
+                        <option value="{{ writing.id }}" {% if selected_writing == writing.id|stringformat:"s" %}selected{% endif %}>{{ writing.name_yozuv }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+        </form>
+    </div>
+
+    <!-- Books List -->
+    <div class="col-md-9 books-list">
+        <div class="row">
+            {% for book in books %}
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                    <div class="product-card h-100">
+                        <a href="{% url 'book_detail' book.pk %}" class="product-link">
+                            {% if book.image %}
+                                <img src="{{ book.image.url }}" alt="Book image" class="img-fluid">
+                            {% endif %}
+                            <h5 class="product-title">{{ book.title }}</h5>
+                            <hr style="margin: 0 auto;">
+                            <h6>{{ book.author }}</h6>
+                            <p>Available: {{ book.quantity }}</p>
+                        </a>
+                        {% if book.quantity > 0 %}
+                            <button class="btn btn-success mt-2">Rent</button>
+                        {% else %}
+                            <button class="btn btn-warning mt-2">Queue</button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Inline CSS -->
+<style>
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        overflow-y: auto;
+        background-color: #f8f9fa;
+        padding: 15px;
+        z-index: 1;
+    }
+
+    .books-list {
+        margin-left: 250px; /* Adjust based on the width of the sidebar */
+        padding: 15px;
+    }
+
+    .product-card {
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+        text-align: center;
+    }
+
+    .product-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-card img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .product-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .product-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+    }
+
+    /* Optional: Adjustments for button colors */
+    .btn-warning {
+        background-color: orange;
+        color: white;
+    }
+    @media (max-width: 768px) {
+        .sidebar {
+            position: static;
+            height: auto;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .books-list {
+            margin-left: 0;
+            padding: 10px;
+        }
+    }
+</style>
+{% endblock %}
